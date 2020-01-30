@@ -1,5 +1,6 @@
 package store.management.system;
 
+import java.sql.SQLException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
@@ -22,6 +23,10 @@ public class StoreManagementResource {
 
 
     public StoreManagementResource() {}
+    
+    public String getJSON(){
+        return "";
+    }
 
     
     /*
@@ -32,9 +37,9 @@ public class StoreManagementResource {
     @GET
     @Path("/getUser/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getUser(@PathParam("id") int userID) {
+    public String getUser(@PathParam("id") int userID) throws SQLException {
         //todo
-       return "";
+       return new DatabaseManipulator().getUser(""+userID);
     }
     
     @GET
