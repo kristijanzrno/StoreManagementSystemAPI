@@ -38,24 +38,21 @@ public class StoreManagementResource {
     @Path("/getUser/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public String getUser(@PathParam("id") int userID) throws SQLException {
-        //todo
        return new DatabaseManipulator().getUser(""+userID);
     }
     
     @GET
     @Path("/getAllUsers")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getAllUsers() {
-        //todo
-       return "";
+    public String getAllUsers() throws SQLException {
+       return new DatabaseManipulator().getAllUsers();
     }
     
     @GET
     @Path("/deleteUser/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String deleteUser(@PathParam("id") int userID) {
-        //todo
-       return "";
+    public String deleteUser(@PathParam("id") int userID) throws SQLException {
+        return new DatabaseManipulator().deleteUser(""+userID);
     }
     
     @GET
@@ -69,15 +66,14 @@ public class StoreManagementResource {
             @QueryParam("email") String email,
             @QueryParam("address") String address,
             @QueryParam("phoneNumber") String phoneNumber,
-            @QueryParam("accountType") String accountType){
-        //todo
-       return "";
+            @QueryParam("accountType") String accountType) throws SQLException{
+       return new DatabaseManipulator().createUser(username, password, firstName, lastName, email, address, phoneNumber, accountType);
     }
     
     @GET
     @Path("/editUser/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String createUser(
+    public String editUser(
             @PathParam("id") int userID,
             @QueryParam("username") String username, 
             @QueryParam("password") String password, 
@@ -86,9 +82,8 @@ public class StoreManagementResource {
             @QueryParam("email") String email,
             @QueryParam("address") String address,
             @QueryParam("phoneNumber") String phoneNumber,
-            @QueryParam("accountType") String accountType){
-        //todo
-       return "";
+            @QueryParam("accountType") String accountType) throws SQLException{
+        return new DatabaseManipulator().editUser(""+userID, username, password, firstName, lastName, email, address, phoneNumber, accountType);
     }
     
     /*
