@@ -95,25 +95,22 @@ public class StoreManagementResource {
     @GET
     @Path("/getSupplier/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getSupplier(@PathParam("id") int supplierID) {
-        //todo
-       return "";
+    public String getSupplier(@PathParam("id") int supplierID) throws SQLException  {
+       return new DatabaseManipulator().getSupplier(""+supplierID);
     }
     
     @GET
     @Path("/getAllSuppliers")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getAllSuppliers() {
-        //todo
-       return "";
+    public String getAllSuppliers() throws SQLException {
+        return new DatabaseManipulator().getAllSuppliers();
     }
     
     @GET
     @Path("/deleteSupplier/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String deleteSupplier(@PathParam("id") int supplierID) {
-        //todo
-       return "";
+    public String deleteSupplier(@PathParam("id") int supplierID) throws SQLException {
+        return new DatabaseManipulator().deleteSupplier(""+supplierID);
     }
     
     @GET
@@ -125,10 +122,8 @@ public class StoreManagementResource {
             @QueryParam("supplierAddress") String supplierAddress,
             @QueryParam("supplierEmail") String supplierEmail,
             @QueryParam("supplierPhoneNumber") String supplierPhoneNumber,
-            @QueryParam("supplierDescription") String supplierDescription){
-        //Note, i missed the supplierName column when creating the SQL databasem, need to add it later on
-        //todo
-       return "";
+            @QueryParam("supplierDescription") String supplierDescription) throws SQLException{
+       return new DatabaseManipulator().createSupplier(supplierName, supplierShippmentAddress, supplierAddress, supplierEmail, supplierPhoneNumber, supplierDescription);
     }
     
     @GET
@@ -141,9 +136,9 @@ public class StoreManagementResource {
             @QueryParam("supplierAddress") String supplierAddress,
             @QueryParam("supplierEmail") String supplierEmail,
             @QueryParam("supplierPhoneNumber") String supplierPhoneNumber,
-            @QueryParam("supplierDescription") String supplierDescription){
-        //todo
-       return "";
+            @QueryParam("supplierDescription") String supplierDescription) throws SQLException{
+        return new DatabaseManipulator().editSupplier(""+supplierID,supplierName, supplierShippmentAddress,
+                supplierAddress, supplierEmail, supplierPhoneNumber, supplierDescription);
     }
     
     /*
@@ -155,25 +150,22 @@ public class StoreManagementResource {
     @GET
     @Path("/getItem/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getItem(@PathParam("id") int itemID) {
-        //todo
-       return "";
+    public String getItem(@PathParam("id") int itemID) throws SQLException {
+       return new DatabaseManipulator().getItem(""+itemID);
     }
     
     @GET
     @Path("/getAllItems")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getAllItems() {
-        //todo
-       return "";
+    public String getAllItems() throws SQLException {
+       return new DatabaseManipulator().getAllItems();
     }
     
     @GET
     @Path("/deleteItem/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String deleteItem(@PathParam("id") int itemID) {
-        //todo
-       return "";
+    public String deleteItem(@PathParam("id") int itemID) throws SQLException {
+       return new DatabaseManipulator().deleteItem(""+itemID);
     }
     
     @GET
@@ -190,9 +182,10 @@ public class StoreManagementResource {
             @QueryParam("itemSalesPrice") String itemSalesPrice,
             @QueryParam("itemPrefferedSupplier") String itemPrefferedSupplier,
             @QueryParam("itemVAT") String itemVAT,
-            @QueryParam("itemLastModifiedData") String itemLastModifiedData){
-        //todo
-       return "";
+            @QueryParam("itemLastModifiedData") String itemLastModifiedData) throws SQLException{
+        return new DatabaseManipulator().createItem(itemDescription, itemQuantity, itemType,
+               itemManufacturerPartNum, itemPurchaseInfo, itemDescriptionOfSale, itemCost, itemSalesPrice,
+               itemPrefferedSupplier, itemVAT, itemLastModifiedData);
     }
     
     @GET
@@ -210,17 +203,17 @@ public class StoreManagementResource {
             @QueryParam("itemSalesPrice") String itemSalesPrice,
             @QueryParam("itemPrefferedSupplier") String itemPrefferedSupplier,
             @QueryParam("itemVAT") String itemVAT,
-            @QueryParam("itemLastModifiedData") String itemLastModifiedData){
-        //todo
-       return "";
+            @QueryParam("itemLastModifiedData") String itemLastModifiedData) throws SQLException{
+       return new DatabaseManipulator().editItem(""+itemID,itemDescription, itemQuantity, itemType,
+               itemManufacturerPartNum, itemPurchaseInfo, itemDescriptionOfSale, itemCost, itemSalesPrice,
+               itemPrefferedSupplier, itemVAT, itemLastModifiedData);
     }
     
     @GET
     @Path("/updateStock/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String updateStock(@QueryParam("noOfItems") String noOfItems){
-        //todo add noOfItems to current number of items
-        return "";
+    public String updateStock(@QueryParam("noOfItems") String noOfItems) {
+        return null;
     }
     
     /*
