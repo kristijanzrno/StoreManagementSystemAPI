@@ -1,7 +1,6 @@
 package store.management.system;
 
 import java.sql.*;
-import javax.ws.rs.QueryParam;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -24,7 +23,7 @@ public class DatabaseManipulator {
         }
         connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/store_management_system?autoReconnect=true&useSSL=false&serverTimezone=UTC", user, pass);
     }
-    
+
     public String getUser(String userID) {
         return sendSQLQuery("SELECT * FROM Users WHERE userID=" + userID);
     }
@@ -46,10 +45,11 @@ public class DatabaseManipulator {
             String phoneNumber,
             String accountType) {
         String query = "INSERT INTO Users (username, password, firstName, lastName, email, address, phoneNumber, accountType)"
-                + " VALUES('"+username+"','"+password+"','"+firstName+"','"+lastName+"','"+email+"','"+address+"','"+phoneNumber+"',"+accountType+")";
+                + " VALUES('" + username + "','" + password + "','" + firstName + "','" + lastName + "','" + email + "','" + address + "','" + phoneNumber + "'," + accountType + ")";
         return sendSQLUpdate(query);
     }
-       public String editUser(
+
+    public String editUser(
             String userID,
             String username,
             String password,
@@ -59,26 +59,27 @@ public class DatabaseManipulator {
             String address,
             String phoneNumber,
             String accountType) {
-        String query = "UPDATE Users SET username='"+username+"', password='"+password+"',firstName='"+firstName+"',"
-                + "lastName='"+lastName+"',email='"+email+"',address='"+address+"',phoneNumber='"+phoneNumber+"',accountType="+accountType
-                + " WHERE userID='"+userID+"'";
+        String query = "UPDATE Users SET username='" + username + "', password='" + password + "',firstName='" + firstName + "',"
+                + "lastName='" + lastName + "',email='" + email + "',address='" + address + "',phoneNumber='" + phoneNumber + "',accountType=" + accountType
+                + " WHERE userID='" + userID + "'";
         System.out.println(query);
         return sendSQLUpdate(query);
     }
+    
     // supplier functions
-       
+
     public String getSupplier(String supplierID) {
         return sendSQLQuery("SELECT * FROM suppliers WHERE supplierID=" + supplierID);
     }
-    
+
     public String getAllSuppliers() {
         return sendSQLQuery("SELECT * FROM suppliers");
     }
-    
+
     public String deleteSupplier(String supplierID) {
         return sendSQLUpdate("DELETE FROM suppliers WHERE supplierID=" + supplierID);
     }
-    
+
     public String createSupplier(String supplierName,
             String supplierShippmentAddress,
             String supplierAddress,
@@ -86,9 +87,10 @@ public class DatabaseManipulator {
             String supplierPhoneNumber,
             String supplierDescription) {
         String query = "INSERT INTO suppliers (supplierName, supplierShippmentAddress, supplierAddress, supplierEmail, supplierPhoneNumber, supplierDescription)"
-                + " VALUES('"+supplierName+"','"+supplierShippmentAddress+"','"+supplierAddress+"','"+supplierEmail+"','"+supplierPhoneNumber+"','"+supplierDescription+")";
+                + " VALUES('" + supplierName + "','" + supplierShippmentAddress + "','" + supplierAddress + "','" + supplierEmail + "','" + supplierPhoneNumber + "','" + supplierDescription + "')";
         return sendSQLUpdate(query);
     }
+
     public String editSupplier(String supplierID,
             String supplierName,
             String supplierShippmentAddress,
@@ -96,26 +98,26 @@ public class DatabaseManipulator {
             String supplierEmail,
             String supplierPhoneNumber,
             String supplierDescription) {
-        String query = "UPDATE suppliers SET supplierName='"+supplierName+"', supplierShippmentAddress='"+supplierShippmentAddress+"',supplierAddress='"+supplierAddress+"',"
-                + "supplierEmail='"+supplierEmail+"',supplierPhoneNumber='"+supplierPhoneNumber+"',supplierDescription='"+supplierDescription
-                + " WHERE supplierID='"+supplierID+"'";
+        String query = "UPDATE suppliers SET supplierName='" + supplierName + "', supplierShippmentAddress='" + supplierShippmentAddress + "',supplierAddress='" + supplierAddress + "',"
+                + "supplierEmail='" + supplierEmail + "',supplierPhoneNumber='" + supplierPhoneNumber + "',supplierDescription='" + supplierDescription
+                + "' WHERE supplierID='" + supplierID + "'";
         System.out.println(query);
         return sendSQLUpdate(query);
     }
-    
+
     // stock item functions
     public String getItem(String itemID) {
         return sendSQLQuery("SELECT * FROM stockitems WHEREitemID=" + itemID);
     }
-    
+
     public String getAllItems() {
         return sendSQLQuery("SELECT * FROM stockitems");
     }
-    
+
     public String deleteItem(String itemID) {
         return sendSQLUpdate("DELETE FROM stockitems WHERE itemID=" + itemID);
     }
-    
+
     public String createItem(String itemDescription,
             String itemQuantity,
             String itemType,
@@ -128,10 +130,11 @@ public class DatabaseManipulator {
             String itemVAT,
             String itemLastModifiedData) {
         String query = "INSERT INTO stockitems (itemDescription, itemQuantity, itemType, itemManufacturerPartNum, itemPurchaseInfo, itemDescriptionOfSale, itemCost, itemSalesPrice, itemPrefferedSupplier, itemVAT, itemLastModifiedData)"
-                + " VALUES('"+itemDescription+"','"+itemQuantity+"','"+itemType+"','"+itemManufacturerPartNum+"','"+itemPurchaseInfo+"','"+itemDescriptionOfSale+"','"+itemCost+"',"+itemSalesPrice+",'"+itemPrefferedSupplier+"','"+itemVAT+"','"+itemLastModifiedData+")";
+                + " VALUES('" + itemDescription + "','" + itemQuantity + "','" + itemType + "','" + itemManufacturerPartNum + "','" + itemPurchaseInfo + "','" + itemDescriptionOfSale + "','" + itemCost + "'," + itemSalesPrice + ",'" + itemPrefferedSupplier + "','" + itemVAT + "','" + itemLastModifiedData + "')";
         return sendSQLUpdate(query);
     }
-       public String editItem(String itemID,
+
+    public String editItem(String itemID,
             String itemDescription,
             String itemQuantity,
             String itemType,
@@ -143,14 +146,19 @@ public class DatabaseManipulator {
             String itemPrefferedSupplier,
             String itemVAT,
             String itemLastModifiedData) {
-        String query = "UPDATE stockitems SET itemDescription='"+itemDescription+"', itemQuantity='"+itemQuantity+"',itemType='"+itemType+"',"
-                + "itemManufacturerPartNum='"+itemManufacturerPartNum+"',itemPurchaseInfo='"+itemPurchaseInfo+"',itemDescriptionOfSale='"+itemDescriptionOfSale+"',itemCost='"+itemCost+ "',"
-                + "itemSalesPrice="+itemSalesPrice+"itemPrefferedSupplier='"+itemPrefferedSupplier+"',itemVAT='"+itemVAT+"',itemLastModifiedData='"+itemLastModifiedData
-                + " WHERE itemID='"+itemID+"'";
+        String query = "UPDATE stockitems SET itemDescription='" + itemDescription + "', itemQuantity='" + itemQuantity + "',itemType='" + itemType + "',"
+                + "itemManufacturerPartNum='" + itemManufacturerPartNum + "',itemPurchaseInfo='" + itemPurchaseInfo + "',itemDescriptionOfSale='" + itemDescriptionOfSale + "',itemCost='" + itemCost + "',"
+                + "itemSalesPrice='" + itemSalesPrice + "', itemPrefferedSupplier='" + itemPrefferedSupplier + "',itemVAT='" + itemVAT + "',itemLastModifiedData='" + itemLastModifiedData
+                + "' WHERE itemID='" + itemID + "'";
         System.out.println(query);
         return sendSQLUpdate(query);
     }
-  
+    
+    public String updateStock(String itemID, String noOfItems){
+        String query = "UPDATE StockItems SET itemQuantity=itemQuantity+" + noOfItems
+                + " WHERE itemID='" + itemID + "'";
+        return sendSQLUpdate(query);
+    }
 
     private String sendSQLQuery(String query) {
         try {

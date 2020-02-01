@@ -171,7 +171,7 @@ public class StoreManagementResource {
     @GET
     @Path("/createItem")
     @Produces(MediaType.APPLICATION_JSON)
-    public String createSupplier(
+    public String createItem(
             @QueryParam("itemDescription") String itemDescription, 
             @QueryParam("itemQuantity") String itemQuantity,
             @QueryParam("itemType") String itemType,
@@ -212,8 +212,8 @@ public class StoreManagementResource {
     @GET
     @Path("/updateStock/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String updateStock(@QueryParam("noOfItems") String noOfItems) {
-        return null;
+    public String updateStock(@PathParam("id") String itemID, @QueryParam("noOfItems") String noOfItems) throws SQLException {
+        return new DatabaseManipulator().updateStock(itemID, noOfItems);
     }
     
     /*
