@@ -1,6 +1,12 @@
 package store.management.system;
 
+import Data.CustomerPurchaseItem;
+import Data.PurchaseInvoice;
+import Data.User;
+import com.google.gson.Gson;
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -101,13 +107,12 @@ public class DatabaseManipulator {
         String query = "UPDATE suppliers SET supplierName='" + supplierName + "', supplierShippmentAddress='" + supplierShippmentAddress + "',supplierAddress='" + supplierAddress + "',"
                 + "supplierEmail='" + supplierEmail + "',supplierPhoneNumber='" + supplierPhoneNumber + "',supplierDescription='" + supplierDescription
                 + "' WHERE supplierID='" + supplierID + "'";
-        System.out.println(query);
         return sendSQLUpdate(query);
     }
 
     // stock item functions
     public String getItem(String itemID) {
-        return sendSQLQuery("SELECT * FROM stockitems WHEREitemID=" + itemID);
+        return sendSQLQuery("SELECT * FROM stockitems WHERE itemID=" + itemID);
     }
 
     public String getAllItems() {
@@ -150,7 +155,6 @@ public class DatabaseManipulator {
                 + "itemManufacturerPartNum='" + itemManufacturerPartNum + "',itemPurchaseInfo='" + itemPurchaseInfo + "',itemDescriptionOfSale='" + itemDescriptionOfSale + "',itemCost='" + itemCost + "',"
                 + "itemSalesPrice='" + itemSalesPrice + "', itemPrefferedSupplier='" + itemPrefferedSupplier + "',itemVAT='" + itemVAT + "',itemLastModifiedData='" + itemLastModifiedData
                 + "' WHERE itemID='" + itemID + "'";
-        System.out.println(query);
         return sendSQLUpdate(query);
     }
     
@@ -159,7 +163,27 @@ public class DatabaseManipulator {
                 + " WHERE itemID='" + itemID + "'";
         return sendSQLUpdate(query);
     }
+    
+    public String createPurchaseInvoice(String json){
+        PurchaseInvoice invoice = new Gson().fromJson(json, PurchaseInvoice.class);
+        String invoiceQuery = "INSERT INTO PurchaseInvoices (userID, invoiceDate, totalPrice)" + " VALUES('" + invoice.getCustomerID() + "','" + invoice.getDateCreated() + "','" + invoice.getTotalPrice() + "');";
+        String response = sendSQLUpdate(invoiceQuery);
+        String id = sendSQLQuery("SELECT LAST_INSERT_ID();").replace("{\"last_insert_id()\":", "").replace("}", "");
+        for(CustomerPurchaseItem item : invoice.getItems()){
+            String query = "INSERT INTO PurchaseItems (invoiceID, itemID, quantity) VALUES(" + id +", "+item.getId()+", "+item.getQuantity()+");";
+            sendSQLUpdate(query);
+       }
+       return response;
+    }
+    
+    
+    public String deletePurchaseInvoice(String invoiceID){
+          String query ="DELETE * FROM PurchaseItems WHERE invoiceID="+invoiceID+"; "
+                + "DELETE FROM PurchaseInvoices WHERE invoiceID="+invoiceID+";";
+          return sendSQLUpdate(query);
+    }
 
+    
     private String sendSQLQuery(String query) {
         try {
             statement = connection.createStatement();
@@ -167,14 +191,16 @@ public class DatabaseManipulator {
             if (response != null) {
                 JSONArray result = resultToJSON(response);
                 if (result != null) {
-                    closeConnection();
+                    //closeConnection();
+                    if(result.length()==1)
+                        return result.get(0).toString();
                     return result.toString();
                 }
             }
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             System.out.println(ex.toString());
         }
-        closeConnection();
+        //closeConnection();
         return new JSONObject().toString();
     }
 
@@ -184,12 +210,12 @@ public class DatabaseManipulator {
             statement = connection.createStatement();
             int result = statement.executeUpdate(query);
             obj.put("result", result);
-            closeConnection();
+            //closeConnection();
             return obj.toString();
         } catch (Exception ex) {
             System.out.println(ex.toString());
         }
-        closeConnection();
+        //closeConnection();
         return obj.toString();
     }
 

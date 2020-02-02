@@ -1,10 +1,13 @@
 package store.management.system;
 
+
 import java.sql.SQLException;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
@@ -23,12 +26,7 @@ public class StoreManagementResource {
 
 
     public StoreManagementResource() {}
-    
-    public String getJSON(){
-        return "";
-    }
-
-    
+      
     /*
     ************************
     TOP LEVEL USER FUNCTIONS
@@ -40,6 +38,7 @@ public class StoreManagementResource {
     public String getUser(@PathParam("id") int userID) throws SQLException {
        return new DatabaseManipulator().getUser(""+userID);
     }
+    
     
     @GET
     @Path("/getAllUsers")
@@ -241,23 +240,15 @@ public class StoreManagementResource {
     @GET
     @Path("/deletePurchaseInvoice/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String deletePurchaseInvoice(@PathParam("id") int invoiceID) {
-        //todo
-       return "";
+    public String deletePurchaseInvoice(@PathParam("id") int invoiceID) throws SQLException {
+       return new DatabaseManipulator().deletePurchaseInvoice(""+invoiceID);
     }
     
-    @GET
+    @POST
     @Path("/createPurchaseInvoice")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String createPurchaseInvoice(
-            @QueryParam("userID") String userID,
-            @QueryParam("invoiceDate") String invoiceDate,
-            @QueryParam("dateRented") String dateRented,
-            @QueryParam("dateReturned") String dateReturned,
-            @QueryParam("invoiceRent") String invoiceRent,
-            @QueryParam("totalPrice") String totalPrice){
-        //todo later, when everything else is implemented
-       return "";
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String createPurchaseInvoice(String json) throws SQLException{
+       return new DatabaseManipulator().createPurchaseInvoice(json);
     }
     
     @GET
