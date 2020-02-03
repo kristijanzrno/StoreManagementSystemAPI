@@ -165,12 +165,13 @@ public class DatabaseManipulator {
     }
     
     public String createPurchaseInvoice(String json){
+        System.out.println(json);
         PurchaseInvoice invoice = new Gson().fromJson(json, PurchaseInvoice.class);
-        String invoiceQuery = "INSERT INTO PurchaseInvoices (userID, invoiceDate, totalPrice)" + " VALUES('" + invoice.getCustomerID() + "','" + invoice.getDateCreated() + "','" + invoice.getTotalPrice() + "');";
+        String invoiceQuery = "INSERT INTO PurchaseInvoices (userID, invoiceDate, totalPrice)" + " VALUES('" + invoice.getUserID()+ "','" + invoice.getInvoiceDate()+ "','" + invoice.getTotalPrice() + "');";
         String response = sendSQLUpdate(invoiceQuery);
         String id = sendSQLQuery("SELECT LAST_INSERT_ID();").replace("{\"last_insert_id()\":", "").replace("}", "");
         for(CustomerPurchaseItem item : invoice.getItems()){
-            String query = "INSERT INTO PurchaseItems (invoiceID, itemID, quantity) VALUES(" + id +", "+item.getId()+", "+item.getQuantity()+");";
+            String query = "INSERT INTO PurchaseItems (invoiceID, itemID, quantity) VALUES(" + id +", "+item.getItemID()+", "+item.getQuantity()+");";
             sendSQLUpdate(query);
        }
        return response;
