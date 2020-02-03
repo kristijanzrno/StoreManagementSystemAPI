@@ -2,6 +2,8 @@ package store.management.system;
 
 import Data.CustomerPurchaseItem;
 import Data.PurchaseInvoice;
+import Data.PurchaseItem;
+import Data.RefillInvoice;
 import Data.StockItem;
 import Data.Supplier;
 import Data.User;
@@ -197,23 +199,60 @@ public class DatabaseManipulator {
     
     
     public String getRefillInvoice(String invoiceID) {
-        return "";
+        String response = sendSQLQuery("SELECT * FROM RefillInvoices WHERE invoiceID="+invoiceID+";", false);
+        System.out.println(response);
+        RefillInvoice invoice = gson.fromJson(response, RefillInvoice.class);
+        response = sendSQLQuery("SELECT * FROM RefillItems WHERE invoiceID="+invoiceID+";", true);
+        PurchaseItem[] items = gson.fromJson(response, PurchaseItem[].class);
+        invoice.getItems().addAll(Arrays.asList(items));
+        return gson.toJson(invoice);
     }
 
     public String getAllRefillInvoices() {
-        return "";
+        String response = sendSQLQuery("SELECT * FROM RefillInvoices;", true);
+        RefillInvoice[] invoices = gson.fromJson(response, RefillInvoice[].class);
+        for(RefillInvoice invoice : invoices){
+            response = sendSQLQuery("SELECT * FROM RefillItems WHERE invoiceID="+invoice.getInvoiceID()+";", true);
+            PurchaseItem[] items = gson.fromJson(response, PurchaseItem[].class);
+            invoice.getItems().addAll(Arrays.asList(items));
+        }
+        return gson.toJson(invoices);
     }
 
     public String deleteRefillInvoice(String invoiceID) {
-        return "";
+          String query = "DELETE * FROM RefillItems WHERE invoiceID=" + invoiceID + "; "
+                + "DELETE FROM RefillInvoices WHERE invoiceID=" + invoiceID + ";";
+        return sendSQLUpdate(query);
     }
 
     public String createRefillInvoice(String json) {
-        return "";
+        System.out.println(json);
+        RefillInvoice invoice = gson.fromJson(json, RefillInvoice.class);
+        String invoiceQuery = "INSERT INTO RefillInvoice (userID, invoiceDate, invoiceDescription, totalPrice, supplierID, shippmentAddress)" + " VALUES('" + invoice.getUserID() + "','" + invoice.getInvoiceDate() + "','" + invoice.getInvoiceDescription() + "','" + invoice.getTotalPrice() + "', '" + invoice.getSupplierID() + "', '"+invoice.getShipmentAddress()+"')";
+        System.out.println(invoiceQuery);
+        String response = sendSQLUpdate(invoiceQuery);
+        String id = sendSQLQuery("SELECT LAST_INSERT_ID();", false).replace("{\"last_insert_id()\":", "").replace("}", "");
+        for (PurchaseItem item : invoice.getItems()) {
+            String query = "INSERT INTO Refillitems (invoiceID, itemID, quantity) VALUES(" + id + ", " + item.getItemID() + ", " + item.getQuantity() + ");";
+            System.out.println(query);
+            sendSQLUpdate(query);
+        }
+        return response;
     }
 
     public String editRefillInvoice(String invoiceID, String json) {
-        return "";
+        RefillInvoice invoice = gson.fromJson(json, RefillInvoice.class);
+        String invoiceQuery = "UPDATE RefillInvoice SET userID="+invoice.getUserID()+",invoiceDate='"+invoice.getInvoiceDate()+"', invoiceDescription='"+invoice.getInvoiceDescription()+"', totalPrice="+invoice.getTotalPrice() + ", supplierID=" + invoice.getSupplierID() + ", shipmentAddress='"+invoice.getShipmentAddress()+"'"
+                + " WHERE invoiceID="+invoiceID + ";";
+        System.out.println(invoiceQuery);
+        String response = sendSQLUpdate(invoiceQuery);
+        for (PurchaseItem item : invoice.getItems()) {
+            String query = "UPDATE Refillitems SET invoiceID="+ invoice.getInvoiceID() +", itemID="+item.getItemID() + ", quantity="+item.getQuantity()
+                    + " WHERE invoiceID="+invoiceID+";";
+            System.out.println(query);
+            sendSQLUpdate(query);
+        }
+        return response;
     }
     
     
