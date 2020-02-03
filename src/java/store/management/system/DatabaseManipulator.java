@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -22,6 +23,7 @@ public class DatabaseManipulator {
     private Statement statement = null;
     private String user = "root";
     private String pass = "password";
+    Gson gson;
 
     public DatabaseManipulator() throws SQLException {
         try {
@@ -30,9 +32,10 @@ public class DatabaseManipulator {
             e1.printStackTrace();
         }
         connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/store_management_system?autoReconnect=true&useSSL=false&serverTimezone=UTC", user, pass);
+        gson = new Gson();
     }
     
-    // USER FUNCTIONS
+    // USER FUNCTIONS““
 
     public String getUser(String userID) {
         return sendSQLQuery("SELECT * FROM Users WHERE userID=" + userID);
@@ -47,14 +50,14 @@ public class DatabaseManipulator {
     }
 
     public String createUser(String json) {
-        User user = new Gson().fromJson(json, User.class);
+        User user = gson.fromJson(json, User.class);
         String query = "INSERT INTO Users (username, password, firstName, lastName, email, address, phoneNumber, accountType)"
                 + " VALUES('" + user.getUsername() + "','" + user.getPassword() + "','" + user.getFirstName() + "','" + user.getLastName() + "','" + user.getEmail() + "','" + user.getAddress() + "','" + user.getPhoneNumber() + "'," + user.getAccountType() + ")";
         return sendSQLUpdate(query);
     }
 
     public String editUser(String userID, String json) {
-        User user = new Gson().fromJson(json, User.class);
+        User user = gson.fromJson(json, User.class);
         String query = "UPDATE Users SET username='" + user.getUsername() + "', password='" + user.getPassword() + "',firstName='" + user.getFirstName() + "',"
                 + "lastName='" + user.getLastName() + "',email='" + user.getEmail() + "',address='" + user.getAddress() + "',phoneNumber='" + user.getPhoneNumber() + "',accountType=" + user.getAccountType()
                 + " WHERE userID='" + userID + "'";
@@ -76,21 +79,21 @@ public class DatabaseManipulator {
     }
 
     public String createSupplier(String json) {
-        Supplier supplier = new Gson().fromJson(json, Supplier.class);
+        Supplier supplier = gson.fromJson(json, Supplier.class);
         String query = "INSERT INTO suppliers (name, description, address, shipmentAddress, email, phoneNumber)"
                 + " VALUES('" + supplier.getName() + "','" + supplier.getDescription() + "','" + supplier.getAddress() + "','" + supplier.getShipmentAddress() + "','" + supplier.getEmail() + "','" + supplier.getPhoneNumber() + "')";
         return sendSQLUpdate(query);
     }
 
     public String editSupplier(String supplierID, String json) {
-        Supplier supplier = new Gson().fromJson(json, Supplier.class);
+        Supplier supplier = gson.fromJson(json, Supplier.class);
         String query = "UPDATE suppliers SET name='" + supplier.getName() + "', description='" + supplier.getDescription() + "', address='" + supplier.getAddress() + "',"
                 + "shipmentAddress='" + supplier.getShipmentAddress() + "',email='" + supplier.getEmail() + "',phoneNumber='" + supplier.getPhoneNumber()
                 + "' WHERE supplierID='" + supplierID + "'";
         return sendSQLUpdate(query);
     }
 
-    // STOCKITEM FUNCTIONS
+    // STOCK ITEM FUNCTIONS
     
     public String getItem(String itemID) {
         return sendSQLQuery("SELECT * FROM stockitems WHERE itemID=" + itemID);
@@ -105,14 +108,14 @@ public class DatabaseManipulator {
     }
 
     public String createItem(String json) {
-        StockItem item = new Gson().fromJson(json, StockItem.class);
+        StockItem item = gson.fromJson(json, StockItem.class);
         String query = "INSERT INTO stockitems (name, description, quantity, type, manufacturerPartNum, cost, salesPrice, preferredSupplier, VAT, dateCreated, lastModified, isRentable)"
                 + " VALUES('" + item.getName() + "','" + item.getDescription() + "','" + item.getQuantity() + "','" + item.getType() + "','" + item.getManufacturerPartNum() + "','" + item.getCost() + "','" + item.getSalesPrice() + "'," + item.getPreferredSupplier() + ",'" + item.getVAT() + "','" + item.getDateCreated() + "','" + item.getLastModified() + "','" + item.isRentable() + "')";
         return sendSQLUpdate(query);
     }
 
     public String editItem(String itemID, String json) {
-        StockItem item = new Gson().fromJson(json, StockItem.class);
+        StockItem item = gson.fromJson(json, StockItem.class);
         String query = "UPDATE stockitems SET name='" + item.getName() + "', description='" + item.getDescription() + "',quantity='" + item.getQuantity() + "',"
                 + "type='" + item.getType() + "',manufacturerPartNum='" + item.getManufacturerPartNum() + "',cost='" + item.getCost() + "',salesPrice='" + item.getSalesPrice() + "',"
                 + "preferredSupplier='" + item.getPreferredSupplier() + "', VAT='" + item.getVAT() + "',dateCreated='" + item.getDateCreated() + "',lastModified='" + item.getLastModified() + "',isRentable='" + item.isRentable()
@@ -129,11 +132,23 @@ public class DatabaseManipulator {
     // PURCHASE INVOICE FUNCTIONS 
     
     public String getPurchaseInvoice(String invoiceID) {
-        return "";
+        String response = sendSQLQuery("SELECT * FROM PurchaseInvoices WHERE invoiceID="+invoiceID+";");
+        PurchaseInvoice invoice = gson.fromJson(response, PurchaseInvoice.class);
+        response = sendSQLQuery("SELECT * FROM PurchaseItems WHERE invoiceID="+invoiceID+";");
+        CustomerPurchaseItem[] items = gson.fromJson(response, CustomerPurchaseItem[].class);
+        invoice.getItems().addAll(Arrays.asList(items));
+        return gson.toJson(invoice);
     }
 
     public String getAllPurchaseInvoices() {
-        return "";
+        String response = sendSQLQuery("SELECT * FROM PurchaseInvoices;");
+        PurchaseInvoice[] invoices = gson.fromJson(response, PurchaseInvoice[].class);
+        for(PurchaseInvoice invoice : invoices){
+            response = sendSQLQuery("SELECT * FROM PurchaseItems WHERE invoiceID="+invoice.getInvoiceID()+";");
+            CustomerPurchaseItem[] items = gson.fromJson(response, CustomerPurchaseItem[].class);
+            invoice.getItems().addAll(Arrays.asList(items));
+        }
+        return gson.toJson(invoices);
     }
 
     public String deletePurchaseInvoice(String invoiceID) {
@@ -144,24 +159,27 @@ public class DatabaseManipulator {
 
     public String createPurchaseInvoice(String json) {
         System.out.println(json);
-        PurchaseInvoice invoice = new Gson().fromJson(json, PurchaseInvoice.class);
-        String invoiceQuery = "INSERT INTO PurchaseInvoices (userID, invoiceDate, totalPrice)" + " VALUES('" + invoice.getUserID() + "','" + invoice.getInvoiceDate() + "','" + invoice.getTotalPrice() + "');";
+        PurchaseInvoice invoice = gson.fromJson(json, PurchaseInvoice.class);
+        String invoiceQuery = "INSERT INTO PurchaseInvoices (userID, invoiceDate, invoiceDescription, totalPrice, hasRentedItems)" + " VALUES('" + invoice.getUserID() + "','" + invoice.getInvoiceDate() + "','" + invoice.getInvoiceDescription() + "','" + invoice.getTotalPrice() + "','" + invoice.getHasRentedItems() + "');";
         String response = sendSQLUpdate(invoiceQuery);
         String id = sendSQLQuery("SELECT LAST_INSERT_ID();").replace("{\"last_insert_id()\":", "").replace("}", "");
         for (CustomerPurchaseItem item : invoice.getItems()) {
-            String query = "INSERT INTO PurchaseItems (invoiceID, itemID, quantity) VALUES(" + id + ", " + item.getItemID() + ", " + item.getQuantity() + ");";
+            String query = "INSERT INTO PurchaseItems (invoiceID, itemID, quantity, dateRented, dateReturned) VALUES(" + id + ", " + item.getItemID() + ", " + item.getQuantity() + ", '"+item.getDateRented() + "', '" + item.getDateReturned()+ "');";
             sendSQLUpdate(query);
         }
         return response;
     }
 
     public String editPurchaseInvoice(String invoiceID, String json) {
-         PurchaseInvoice invoice = new Gson().fromJson(json, PurchaseInvoice.class);
-        String invoiceQuery = "UPDATE INTO PurchaseInvoices (userID, invoiceDate, totalPrice)" + " VALUES('" + invoice.getUserID() + "','" + invoice.getInvoiceDate() + "','" + invoice.getTotalPrice() + "');";
+        PurchaseInvoice invoice = gson.fromJson(json, PurchaseInvoice.class);
+        String invoiceQuery = "UPDATE PurchaseInvoices SET userID="+invoice.getUserID()+",invoiceDate='"+invoice.getInvoiceDate()+"', invoiceDescription='"+invoice.getInvoiceDescription()+"', totalPrice="+invoice.getTotalPrice() + ", hasRentedItems="+invoice.getHasRentedItems() 
+                + " WHERE invoiceID="+invoiceID + ";";
+        System.out.println(invoiceQuery);
         String response = sendSQLUpdate(invoiceQuery);
-        String id = sendSQLQuery("SELECT LAST_INSERT_ID();").replace("{\"last_insert_id()\":", "").replace("}", "");
         for (CustomerPurchaseItem item : invoice.getItems()) {
-            String query = "INSERT INTO PurchaseItems (invoiceID, itemID, quantity) VALUES(" + id + ", " + item.getItemID() + ", " + item.getQuantity() + ");";
+            String query = "UPDATE PurchaseItems SET invoiceID="+ invoice.getInvoiceID() +", itemID="+item.getItemID() + ", quantity="+item.getQuantity()+", dateRented='"+item.getDateRented()+"', dateReturned='"+item.getDateReturned()+"'"
+                    + " WHERE invoiceID="+invoiceID+";";
+            System.out.println(query);
             sendSQLUpdate(query);
         }
         return response;

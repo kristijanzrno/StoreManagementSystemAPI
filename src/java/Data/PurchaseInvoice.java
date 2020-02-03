@@ -15,7 +15,7 @@ public class PurchaseInvoice extends Invoice{
         this.items = items;
     }
 
-    public boolean isHasRentedItems() {
+    public boolean getHasRentedItems() {
         return hasRentedItems;
     }
 
