@@ -9,11 +9,7 @@ import Data.Supplier;
 import Data.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import static com.sun.org.apache.bcel.internal.Repository.instanceOf;
-import static com.sun.org.apache.bcel.internal.Repository.instanceOf;
 import java.sql.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -40,10 +36,14 @@ public class DatabaseManipulator {
         gson = new GsonBuilder().setFieldNamingStrategy(f -> f.getName().toLowerCase()).create();
     }
     
-    // USER FUNCTIONS““
+    // USER FUNCTIONS
 
     public String getUser(String userID) {
         return sendSQLQuery("SELECT * FROM Users WHERE userID=" + userID, false);
+    }
+    
+    public String getUserWithUsername(String username) {
+        return sendSQLQuery("SELECT * FROM Users WHERE username='" + username+"'", false);
     }
 
     public String getAllUsers() {
@@ -164,17 +164,22 @@ public class DatabaseManipulator {
     }
 
     public String createPurchaseInvoice(String json) {
-        System.out.println(json);
         PurchaseInvoice invoice = gson.fromJson(json, PurchaseInvoice.class);
         String invoiceQuery = "INSERT INTO PurchaseInvoices (userID, invoiceDate, invoiceDescription, totalPrice, hasRentedItems)" + " VALUES('" + invoice.getUserID() + "','" + invoice.getInvoiceDate() + "','" + invoice.getInvoiceDescription() + "','" + invoice.getTotalPrice() + "'," + (""+invoice.getHasRentedItems()).toUpperCase() + ");";
-        System.out.println(invoiceQuery);
         String response = sendSQLUpdate(invoiceQuery);
         String id = sendSQLQuery("SELECT LAST_INSERT_ID();", false).replace("{\"last_insert_id()\":", "").replace("}", "");
         for (CustomerPurchaseItem item : invoice.getItems()) {
-            item.setDateRented("2020-2-3");
-            item.setDateReturned("2020-2-3");
-            String query = "INSERT INTO PurchaseItems (invoiceID, itemID, quantity, dateRented, dateReturned) VALUES(" + id + ", " + item.getItemID() + ", " + item.getQuantity() + ", '"+item.getDateRented() + "', '" + item.getDateReturned()+ "');";
-            System.out.println(query);
+            String query = "INSERT INTO PurchaseItems (invoiceID, itemID, quantity, dateRented, dateReturned) VALUES(" + id + ", " + item.getItemID() + ", " + item.getQuantity();
+            if(item.getDateRented() != null){
+                query += ", '"+item.getDateRented()+"'";
+                if(item.getDateReturned() != null)
+                    query += ", '"+item.getDateReturned()+"'";
+                else
+                    query+=",null";
+            }else{
+                query +=",null,null";
+            }
+            query += ");";
             sendSQLUpdate(query);
         }
         return response;
@@ -187,8 +192,12 @@ public class DatabaseManipulator {
         System.out.println(invoiceQuery);
         String response = sendSQLUpdate(invoiceQuery);
         for (CustomerPurchaseItem item : invoice.getItems()) {
-            String query = "UPDATE PurchaseItems SET invoiceID="+ invoice.getInvoiceID() +", itemID="+item.getItemID() + ", quantity="+item.getQuantity()+", dateRented='"+item.getDateRented()+"', dateReturned='"+item.getDateReturned()+"'"
-                    + " WHERE invoiceID="+invoiceID+";";
+            String query = "UPDATE PurchaseItems SET invoiceID="+ invoice.getInvoiceID() +", itemID="+item.getItemID() + ", quantity="+item.getQuantity();
+                    if(item.getDateRented() != null)
+                        query += ", dateRented='"+item.getDateRented()+"'";
+                    if(item.getDateReturned() != null)
+                        query += ", dateReturned='"+item.getDateReturned()+"'";
+                    query += " WHERE invoiceID="+invoiceID+";";
             System.out.println(query);
             sendSQLUpdate(query);
         }

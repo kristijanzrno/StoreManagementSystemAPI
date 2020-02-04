@@ -1,5 +1,9 @@
 package Data;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class User {
     protected int userID;
     protected String username;
@@ -9,7 +13,7 @@ public class User {
     protected String email;
     protected String address;
     protected String phoneNumber;
-    protected String accountType;
+    protected int accountType;
 
     public int getUserID() {
         return userID;
@@ -75,11 +79,25 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getAccountType() {
+    public int getAccountType() {
         return accountType;
     }
 
-    public void setAccountType(String accountType) {
+    public void setAccountType(int accountType) {
         this.accountType = accountType;
+    }
+
+    public void setEncryptedPassword(String password) throws NoSuchAlgorithmException {
+        byte[] digest = MessageDigest.getInstance("SHA-256").digest(password.getBytes(StandardCharsets.UTF_8));
+        String hash = "";
+        for (byte b : digest) {
+            String temp = Integer.toHexString(b & 0xFF);
+            if (temp.length() < 2) {
+                temp = "0" + temp;
+            }
+            hash += Integer.toHexString(b & 0xFF);
+
+        }
+        this.password = hash;
     }
 }
