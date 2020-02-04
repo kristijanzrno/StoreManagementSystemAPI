@@ -1,7 +1,6 @@
 package Data;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 public class PurchaseInvoice extends Invoice{
     private ArrayList<CustomerPurchaseItem> items = new ArrayList<>();
