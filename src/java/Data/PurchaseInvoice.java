@@ -14,13 +14,14 @@ public class PurchaseInvoice extends Invoice{
         for(StockItem item:stockItems){
             int quantity = 1;
             for(CustomerPurchaseItem cpitem:items){
-                if(item.getItemID()+"" == cpitem.getItemID()){
+                if((item.getItemID()+"").equals(cpitem.getItemID())){
                     quantity = cpitem.getQuantity();
                 }
             }
             float itemPrice = item.getCost();
             float itemVAT = item.getVAT();
             totalPrice = totalPrice + ((itemPrice + itemPrice*(itemVAT/100))*quantity);       
+            this.totalPrice = totalPrice;
         }
     }
 

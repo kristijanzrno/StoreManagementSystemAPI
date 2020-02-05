@@ -25,6 +25,11 @@ public class StoreManagementResource {
 
     public StoreManagementResource() {
     }
+    
+    @GET
+    public String getTest(){
+        return "test";
+    }
 
     @GET
     @Path("/login")

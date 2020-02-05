@@ -10,13 +10,9 @@ import Data.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import jdk.nashorn.internal.parser.JSONParser;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -52,7 +48,7 @@ public class DatabaseManipulator {
     }
 
     public String getAllUsers() {
-        return sendSQLQuery("SELECT * FROM Users", false);
+        return sendSQLQuery("SELECT * FROM Users", true);
     }
 
     public String deleteUser(String userID) {
@@ -81,7 +77,7 @@ public class DatabaseManipulator {
     }
 
     public String getAllSuppliers() {
-        return sendSQLQuery("SELECT * FROM suppliers", false);
+        return sendSQLQuery("SELECT * FROM suppliers", true);
     }
 
     public String deleteSupplier(String supplierID) {
@@ -170,6 +166,11 @@ public class DatabaseManipulator {
 
     public String createPurchaseInvoice(String json) {
         PurchaseInvoice invoice = gson.fromJson(json, PurchaseInvoice.class);
+        ArrayList<StockItem> stockItems = new ArrayList<>();
+        for(CustomerPurchaseItem cpItem : invoice.getItems()){
+            stockItems.add(gson.fromJson(getItem(cpItem.getItemID()), StockItem.class));
+        }
+        invoice.calculateTotalPrice(stockItems);
         String invoiceQuery = "INSERT INTO PurchaseInvoices (userID, invoiceDate, invoiceDescription, totalPrice, hasRentedItems)" + " VALUES('" + invoice.getUserID() + "','" + invoice.getInvoiceDate() + "','" + invoice.getInvoiceDescription() + "','" + invoice.getTotalPrice() + "'," + (""+invoice.getHasRentedItems()).toUpperCase() + ");";
         String response = sendSQLUpdate(invoiceQuery);
         String id = sendSQLQuery("SELECT LAST_INSERT_ID();", false).replace("{\"last_insert_id()\":", "").replace("}", "");
