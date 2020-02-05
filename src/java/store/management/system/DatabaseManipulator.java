@@ -11,7 +11,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.sql.*;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import jdk.nashorn.internal.parser.JSONParser;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -263,7 +268,31 @@ public class DatabaseManipulator {
         }
         return response;
     }
+    // Model functions
+    public String calculatePurchaseInvoiceTotalPrice(String invoiceID, String userID, String json){
+        String invoicID = invoiceID;
+        String usrID = userID;
+        String calculateTotalPrice = "SELECT * FROM refillinvoices WHERE invoiceID = " + invoicID + "AND userID = " + usrID + ";";
+        String response = sendSQLQuery(calculateTotalPrice, false);
+        return response;
+    }
     
+    public String calculatePurchaseInvoiceTotalPrice(String invoiceID) {
+        //String response = sendSQLQuery("SELECT totalPrice FROM PurchaseInvoices WHERE invoiceID="+invoiceID+";", false);
+        String response = sendSQLQuery("SELECT * FROM PurchaseInvoices;", true);
+        PurchaseInvoice[] invoices = gson.fromJson(response, PurchaseInvoice[].class);
+        for(PurchaseInvoice invoice : invoices){
+            response = sendSQLQuery("SELECT itemid, quantity FROM PurchaseItems WHERE invoiceID="+invoice.getInvoiceID()+";", true);
+            CustomerPurchaseItem[] items = gson.fromJson(response, CustomerPurchaseItem[].class);
+            invoice.getItems().addAll(Arrays.asList(items));
+        }
+        String returnedQuery = gson.toJson(invoices);
+        System.out.println(returnedQuery.split("itemid")[1].split("\"")[2]); // item id
+        System.out.println(returnedQuery.split("quantity")[1].split(":")[1].split("}")[0]); // item quantity
+        return gson.toJson(invoices);
+    }
+    
+
     
     
     // PRIVATE DATABASE MANIPULATION FUNCTIONS
@@ -336,5 +365,6 @@ public class DatabaseManipulator {
         return jsonArray;
     }
 
+    
 
 }
