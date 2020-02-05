@@ -9,6 +9,20 @@ public class PurchaseInvoice extends Invoice{
     public ArrayList<CustomerPurchaseItem> getItems() {
         return items;
     }
+    public void calculateTotalPrice(ArrayList<StockItem> stockItems){
+        float totalPrice = 0;
+        for(StockItem item:stockItems){
+            int quantity = 1;
+            for(CustomerPurchaseItem cpitem:items){
+                if(item.getItemID()+"" == cpitem.getItemID()){
+                    quantity = cpitem.getQuantity();
+                }
+            }
+            float itemPrice = item.getCost();
+            float itemVAT = item.getVAT();
+            totalPrice = totalPrice + ((itemPrice + itemPrice*(itemVAT/100))*quantity);       
+        }
+    }
 
     public void setItems(ArrayList<CustomerPurchaseItem> items) {
         this.items = items;
