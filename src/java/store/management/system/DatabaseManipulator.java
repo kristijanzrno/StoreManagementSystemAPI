@@ -110,7 +110,7 @@ public class DatabaseManipulator {
     }
 
     public String getAllItems() {
-        return sendSQLQuery("SELECT * FROM stockitems", false);
+        return sendSQLQuery("SELECT * FROM stockitems", true);
     }
 
     public String deleteItem(String itemID) {
