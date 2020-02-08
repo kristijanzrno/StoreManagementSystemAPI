@@ -33,11 +33,15 @@ public class DatabaseManipulator {
         } catch (ClassNotFoundException e1) {
             e1.printStackTrace();
         }
-        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/store_management_system?autoReconnect=true&useSSL=false&serverTimezone=UTC", user, pass);
+        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/store_management_system?autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC", user, pass);
         gson = new GsonBuilder().setFieldNamingStrategy(f -> f.getName().toLowerCase()).create();
     }
     
     // USER FUNCTIONS
+    
+    public Connection ConnectDB(){
+        return connection;
+    }
 
     public String getUser(String userID) {
         return sendSQLQuery("SELECT * FROM Users WHERE userID=" + userID, false);
