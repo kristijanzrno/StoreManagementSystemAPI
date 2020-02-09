@@ -12,6 +12,10 @@ import com.google.gson.GsonBuilder;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.jfree.data.jdbc.JDBCCategoryDataset;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -37,12 +41,23 @@ public class DatabaseManipulator {
         gson = new GsonBuilder().setFieldNamingStrategy(f -> f.getName().toLowerCase()).create();
     }
     
-    // USER FUNCTIONS
-    
-    public Connection ConnectDB(){
-        return connection;
+        
+// FUNCTION RETURNING MAP WITH KEYS FOR DASHBOARD
+    public Map<String, String> check(String query) throws SQLException {
+        String quer = query;
+        JDBCCategoryDataset dataset = new JDBCCategoryDataset(connection, quer);
+        List<String> columns = (List<String>) dataset.getColumnKeys();
+        Map<String, String> map = new HashMap<>();
+        int i = 0;
+        for (String column : columns) {
+            map.put(column, dataset.getValue(0, i).toString());
+            //System.out.println(map.get(column));
+            i++;
+        }
+        return map;
     }
 
+// USER FUNCTIONS
     public String getUser(String userID) {
         return sendSQLQuery("SELECT * FROM Users WHERE userID=" + userID, false);
     }
