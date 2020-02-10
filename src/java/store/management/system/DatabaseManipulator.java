@@ -135,7 +135,7 @@ public class DatabaseManipulator {
     public String createItem(String json) {
         StockItem item = gson.fromJson(json, StockItem.class);
         String query = "INSERT INTO stockitems (name, description, quantity, type, manufacturerPartNum, cost, salesPrice, preferredSupplier, VAT, dateCreated, lastModified, isRentable)"
-                + " VALUES('" + item.getName() + "','" + item.getDescription() + "','" + item.getQuantity() + "','" + item.getType() + "','" + item.getManufacturerPartNum() + "','" + item.getCost() + "','" + item.getSalesPrice() + "'," + item.getPreferredSupplier() + ",'" + item.getVAT() + "','" + item.getDateCreated() + "','" + item.getLastModified() + "','" + (""+item.isRentable()).toUpperCase() + "')";
+                + " VALUES('" + item.getName() + "','" + item.getDescription() + "','" + item.getQuantity() + "','" + item.getType() + "','" + item.getManufacturerPartNum() + "','" + item.getCost() + "','" + item.getSalesPrice() + "'," + item.getPreferredSupplier() + ",'" + item.getVAT() + "','" + item.getDateCreated() + "','" + item.getLastModified() + "'," + (""+item.isRentable()).toUpperCase() + ")";
         return sendSQLUpdate(query);
     }
 
@@ -143,8 +143,8 @@ public class DatabaseManipulator {
         StockItem item = gson.fromJson(json, StockItem.class);
         String query = "UPDATE stockitems SET name='" + item.getName() + "', description='" + item.getDescription() + "',quantity='" + item.getQuantity() + "',"
                 + "type='" + item.getType() + "',manufacturerPartNum='" + item.getManufacturerPartNum() + "',cost='" + item.getCost() + "',salesPrice='" + item.getSalesPrice() + "',"
-                + "preferredSupplier='" + item.getPreferredSupplier() + "', VAT='" + item.getVAT() + "',dateCreated='" + item.getDateCreated() + "',lastModified='" + item.getLastModified() + "',isRentable='" + (""+item.isRentable()).toUpperCase()
-                + "' WHERE itemID='" + itemID + "'";
+                + "preferredSupplier='" + item.getPreferredSupplier() + "', VAT='" + item.getVAT() + "',dateCreated='" + item.getDateCreated() + "',lastModified='" + item.getLastModified() + "',isRentable=" + (""+item.isRentable()).toUpperCase()
+                + " WHERE itemID='" + itemID + "'";
         return sendSQLUpdate(query);
     }
 

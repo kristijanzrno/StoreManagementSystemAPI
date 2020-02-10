@@ -155,7 +155,7 @@ public class StoreManagementResource {
         return new DatabaseManipulator().createItem(json);
     }
 
-    @GET
+    @POST
     @Path("/editItem/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public String editItem(@PathParam("id") int itemID, String json) throws SQLException {
