@@ -41,11 +41,15 @@ public class DatabaseManipulator {
         gson = new GsonBuilder().setFieldNamingStrategy(f -> f.getName().toLowerCase()).create();
     }
     
+    
+    //todo - delete once the dashboard is moved to client
+    public Connection ConnectDB(){
+        return connection;
+    }
         
 // FUNCTION RETURNING MAP WITH KEYS FOR DASHBOARD
-    public Map<String, String> check(String query) throws SQLException {
-        String quer = query;
-        JDBCCategoryDataset dataset = new JDBCCategoryDataset(connection, quer);
+    public String dashboardQuery(String query) throws SQLException {
+        JDBCCategoryDataset dataset = new JDBCCategoryDataset(connection, query);
         List<String> columns = (List<String>) dataset.getColumnKeys();
         Map<String, String> map = new HashMap<>();
         int i = 0;
@@ -54,7 +58,7 @@ public class DatabaseManipulator {
             //System.out.println(map.get(column));
             i++;
         }
-        return map;
+        return gson.toJson(map);
     }
 
 // USER FUNCTIONS

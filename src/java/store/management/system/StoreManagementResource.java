@@ -31,6 +31,11 @@ public class StoreManagementResource {
         return "test";
     }
 
+    /*
+    ************************
+    LOGIN
+    ************************
+     */
     @GET
     @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
@@ -251,6 +256,19 @@ public class StoreManagementResource {
     @Produces(MediaType.APPLICATION_JSON)
     public String editRefillInvoice(@PathParam("id") int invoiceID, String json) throws SQLException {
         return new DatabaseManipulator().editRefillInvoice("" + invoiceID, json);
+    }
+    
+     /*
+    ************************
+    DASHBOARD FUNCTIONS
+    ************************
+     */
+    
+    @GET
+    @Path("/dashboardQuery")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String dashboardQuery(@QueryParam("query") String query) throws SQLException {
+        return new DatabaseManipulator().dashboardQuery(query);
     }
 
 }
