@@ -41,11 +41,6 @@ public class DatabaseManipulator {
         gson = new GsonBuilder().setFieldNamingStrategy(f -> f.getName().toLowerCase()).create();
     }
     
-    
-    //todo - delete once the dashboard is moved to client
-    public Connection ConnectDB(){
-        return connection;
-    }
         
 // FUNCTION RETURNING MAP WITH KEYS FOR DASHBOARD
     public String dashboardQuery(String query) throws SQLException {
@@ -58,6 +53,7 @@ public class DatabaseManipulator {
             //System.out.println(map.get(column));
             i++;
         }
+        System.err.println(gson.toJson(map));
         return gson.toJson(map);
     }
 
@@ -215,6 +211,7 @@ public class DatabaseManipulator {
     }
 
     public String editPurchaseInvoice(String invoiceID, String json) {
+        //todo update price
         PurchaseInvoice invoice = gson.fromJson(json, PurchaseInvoice.class);
         String invoiceQuery = "UPDATE PurchaseInvoices SET userID="+invoice.getUserID()+",invoiceDate='"+invoice.getInvoiceDate()+"', invoiceDescription='"+invoice.getInvoiceDescription()+"', totalPrice="+invoice.getTotalPrice() + ", hasRentedItems="+(""+invoice.getHasRentedItems()).toUpperCase()
                 + " WHERE invoiceID="+invoiceID + ";";
