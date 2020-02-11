@@ -1,5 +1,7 @@
 package Data;
 
+import java.util.ArrayList;
+
 
 public class Invoice {
     protected int invoiceID;
@@ -47,4 +49,5 @@ public class Invoice {
     public void setTotalPrice(float totalPrice) {
         this.totalPrice = totalPrice;
     }
+    
 }

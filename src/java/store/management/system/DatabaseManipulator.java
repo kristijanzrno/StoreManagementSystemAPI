@@ -216,8 +216,10 @@ public class DatabaseManipulator {
     }
 
     public String editPurchaseInvoice(String invoiceID, String json) {
-        //todo update price
-        PurchaseInvoice invoice = gson.fromJson(json, PurchaseInvoice.class);
+        deletePurchaseInvoice(invoiceID);
+        return createPurchaseInvoice(json);
+        // In case of needing a real editing function
+        /*PurchaseInvoice invoice = gson.fromJson(json, PurchaseInvoice.class);
         String invoiceQuery = "UPDATE PurchaseInvoices SET userID=" + invoice.getUserID() + ",invoiceDate='" + invoice.getInvoiceDate() + "', invoiceDescription='" + invoice.getInvoiceDescription() + "', totalPrice=" + invoice.getTotalPrice() + ", hasRentedItems=" + ("" + invoice.getHasRentedItems()).toUpperCase()
                 + " WHERE invoiceID=" + invoiceID + ";";
         System.out.println(invoiceQuery);
@@ -234,7 +236,7 @@ public class DatabaseManipulator {
             System.out.println(query);
             sendSQLUpdate(query);
         }
-        return response;
+        return response;*/
     }
 
     // REFILL INVOICES FUNCTIONS
@@ -274,6 +276,11 @@ public class DatabaseManipulator {
     public String createRefillInvoice(String json) {
         System.out.println(json);
         RefillInvoice invoice = gson.fromJson(json, RefillInvoice.class);
+        ArrayList<StockItem> stockItems = new ArrayList<>();
+        for (PurchaseItem cpItem : invoice.getItems()) {
+            stockItems.add(gson.fromJson(getItem(cpItem.getItemID()), StockItem.class));
+        }
+        invoice.calculateTotalPrice(stockItems);
         String invoiceQuery = "INSERT INTO RefillInvoice (userID, invoiceDate, invoiceDescription, totalPrice, supplierID, shippmentAddress)" + " VALUES('" + invoice.getUserID() + "','" + invoice.getInvoiceDate() + "','" + invoice.getInvoiceDescription() + "','" + invoice.getTotalPrice() + "', '" + invoice.getSupplierID() + "', '" + invoice.getShipmentAddress() + "')";
         System.out.println(invoiceQuery);
         String response = sendSQLUpdate(invoiceQuery);
@@ -287,8 +294,10 @@ public class DatabaseManipulator {
     }
 
     public String editRefillInvoice(String invoiceID, String json) {
-        RefillInvoice invoice = gson.fromJson(json, RefillInvoice.class);
-        String invoiceQuery = "UPDATE RefillInvoice SET userID=" + invoice.getUserID() + ",invoiceDate='" + invoice.getInvoiceDate() + "', invoiceDescription='" + invoice.getInvoiceDescription() + "', totalPrice=" + invoice.getTotalPrice() + ", supplierID=" + invoice.getSupplierID() + ", shipmentAddress='" + invoice.getShipmentAddress() + "'"
+        deleteRefillInvoice(invoiceID);
+        return createRefillInvoice(json);
+        // In case of needing a real editing function
+       /* String invoiceQuery = "UPDATE RefillInvoice SET userID=" + invoice.getUserID() + ",invoiceDate='" + invoice.getInvoiceDate() + "', invoiceDescription='" + invoice.getInvoiceDescription() + "', totalPrice=" + invoice.getTotalPrice() + ", supplierID=" + invoice.getSupplierID() + ", shipmentAddress='" + invoice.getShipmentAddress() + "'"
                 + " WHERE invoiceID=" + invoiceID + ";";
         System.out.println(invoiceQuery);
         String response = sendSQLUpdate(invoiceQuery);
@@ -298,31 +307,7 @@ public class DatabaseManipulator {
             System.out.println(query);
             sendSQLUpdate(query);
         }
-        return response;
-    }
-
-    // Model functions
-    public String calculatePurchaseInvoiceTotalPrice(String invoiceID, String userID, String json) {
-        String invoicID = invoiceID;
-        String usrID = userID;
-        String calculateTotalPrice = "SELECT * FROM refillinvoices WHERE invoiceID = " + invoicID + "AND userID = " + usrID + ";";
-        String response = sendSQLQuery(calculateTotalPrice, false);
-        return response;
-    }
-
-    public String calculatePurchaseInvoiceTotalPrice(String invoiceID) {
-        //String response = sendSQLQuery("SELECT totalPrice FROM PurchaseInvoices WHERE invoiceID="+invoiceID+";", false);
-        String response = sendSQLQuery("SELECT * FROM PurchaseInvoices;", true);
-        PurchaseInvoice[] invoices = gson.fromJson(response, PurchaseInvoice[].class);
-        for (PurchaseInvoice invoice : invoices) {
-            response = sendSQLQuery("SELECT itemid, quantity FROM PurchaseItems WHERE invoiceID=" + invoice.getInvoiceID() + ";", true);
-            CustomerPurchaseItem[] items = gson.fromJson(response, CustomerPurchaseItem[].class);
-            invoice.getItems().addAll(Arrays.asList(items));
-        }
-        String returnedQuery = gson.toJson(invoices);
-        System.out.println(returnedQuery.split("itemid")[1].split("\"")[2]); // item id
-        System.out.println(returnedQuery.split("quantity")[1].split(":")[1].split("}")[0]); // item quantity
-        return gson.toJson(invoices);
+        return response;*/
     }
 
     // PRIVATE DATABASE MANIPULATION FUNCTIONS
