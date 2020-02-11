@@ -256,7 +256,8 @@ public class DatabaseManipulator {
         for (RefillInvoice invoice : invoices) {
             response = sendSQLQuery("SELECT * FROM RefillItems WHERE invoiceID=" + invoice.getInvoiceID() + ";", true);
             PurchaseItem[] items = gson.fromJson(response, PurchaseItem[].class);
-            invoice.getItems().addAll(Arrays.asList(items));
+            if(items != null)
+                invoice.getItems().addAll(Arrays.asList(items));
         }
         return gson.toJson(invoices);
     }
@@ -281,7 +282,7 @@ public class DatabaseManipulator {
             stockItems.add(gson.fromJson(getItem(cpItem.getItemID()), StockItem.class));
         }
         invoice.calculateTotalPrice(stockItems);
-        String invoiceQuery = "INSERT INTO RefillInvoice (userID, invoiceDate, invoiceDescription, totalPrice, supplierID, shippmentAddress)" + " VALUES('" + invoice.getUserID() + "','" + invoice.getInvoiceDate() + "','" + invoice.getInvoiceDescription() + "','" + invoice.getTotalPrice() + "', '" + invoice.getSupplierID() + "', '" + invoice.getShipmentAddress() + "')";
+        String invoiceQuery = "INSERT INTO RefillInvoices (userID, invoiceDate, invoiceDescription, totalPrice, supplierID, shipmentAddres)" + " VALUES('" + invoice.getUserID() + "','" + invoice.getInvoiceDate() + "','" + invoice.getInvoiceDescription() + "','" + invoice.getTotalPrice() + "', '" + invoice.getSupplierID() + "', '" + invoice.getShipmentAddres() + "')";
         System.out.println(invoiceQuery);
         String response = sendSQLUpdate(invoiceQuery);
         String id = sendSQLQuery("SELECT LAST_INSERT_ID();", false).replace("{\"last_insert_id()\":", "").replace("}", "");

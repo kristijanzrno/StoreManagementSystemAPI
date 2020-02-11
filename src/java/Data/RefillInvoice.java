@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 public class RefillInvoice extends Invoice{
     private String supplierID;
-    private String shipmentAddress;
-    private ArrayList<PurchaseItem> items;
+    private String shipmentAddres;
+    private ArrayList<PurchaseItem> items = new ArrayList<PurchaseItem>();
 
     public String getSupplierID() {
         return supplierID;
@@ -15,12 +15,12 @@ public class RefillInvoice extends Invoice{
         this.supplierID = supplierID;
     }
 
-    public String getShipmentAddress() {
-        return shipmentAddress;
+    public String getShipmentAddres() {
+        return shipmentAddres;
     }
 
-    public void setShipmentAddress(String shipmentAddress) {
-        this.shipmentAddress = shipmentAddress;
+    public void setShipmentAddres(String shipmentAddress) {
+        this.shipmentAddres = shipmentAddress;
     }
     
     public ArrayList<PurchaseItem> getItems(){
@@ -31,6 +31,16 @@ public class RefillInvoice extends Invoice{
         this.items = items;
     }
     
+    public void addItem(PurchaseItem item){
+        for(int i = 0; i < items.size(); i++){
+            if(items.get(i).getItemID().equals(item.getItemID())){
+                items.get(i).setQuantity(items.get(i).getQuantity() + item.getQuantity());
+                return;
+            }
+        }
+        this.items.add(item);
+    }
+
      public void calculateTotalPrice(ArrayList<StockItem> stockItems){
         float totalPrice = 0;
         for(StockItem item:stockItems){
