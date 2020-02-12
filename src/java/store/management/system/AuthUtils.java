@@ -15,33 +15,51 @@ import java.sql.SQLException;
  * @author kristijanzrno
  */
 public class AuthUtils {
+
     // Authentication todo
     Gson gson;
-    public AuthUtils(){
+
+    public AuthUtils() {
         gson = new GsonBuilder().setFieldNamingStrategy(f -> f.getName().toLowerCase()).create();
     }
-    
-    public String authenticateCustomer(String username, String password) throws SQLException{
+
+    public String authenticateCustomer(String username, String password) throws SQLException {
+        System.err.println(username + " - " + password);
         String data = new DatabaseManipulator().getUserWithUsername(username);
-        User user = gson.fromJson(data, User.class);
-        if(user.getPassword().equals(password) && user.getAccountType()>=1)
-            return data;
-        return null;
+        try {
+            User user = gson.fromJson(data, User.class);
+            if (user.getPassword().equals(password) && user.getAccountType() >= 1) {
+                return data;
+            }
+        } catch (Exception e) {
+            return "";
+        }
+        return "";
     }
-    
-    public String authenticateEmployee(String username, String password) throws SQLException{
+
+    public String authenticateEmployee(String username, String password) throws SQLException {
         String data = new DatabaseManipulator().getUser(username);
-        User user = gson.fromJson(data, User.class);
-        if(user.getPassword().equals(password) && user.getAccountType()>=2)
-            return data;
-        return null;
+        try {
+            User user = gson.fromJson(data, User.class);
+            if (user.getPassword().equals(password) && user.getAccountType() >= 2) {
+                return data;
+            }
+        } catch (Exception e) {
+            return "";
+        }
+        return "";
     }
-    
-     public String authenticateAdmin(String username, String password) throws SQLException{
+
+    public String authenticateAdmin(String username, String password) throws SQLException {
         String data = new DatabaseManipulator().getUser(username);
-        User user = gson.fromJson(data, User.class);
-        if(user.getPassword().equals(password) && user.getAccountType()>=3)
-            return data;
-        return null;
+        try {
+            User user = gson.fromJson(data, User.class);
+            if (user.getPassword().equals(password) && user.getAccountType() >= 3) {
+                return data;
+            }
+        } catch (Exception e) {
+            return "";
+        }
+        return "";
     }
 }
