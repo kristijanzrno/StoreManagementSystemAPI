@@ -171,7 +171,7 @@ public class StoreManagementResource {
     @Path("/updateStock/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public String updateStock(@PathParam("id") String itemID, @QueryParam("noOfItems") String noOfItems) throws SQLException {
-        return new DatabaseManipulator().updateStock(itemID, noOfItems);
+        return new DatabaseManipulator().increaseStock(itemID, noOfItems);
     }
 
     /*

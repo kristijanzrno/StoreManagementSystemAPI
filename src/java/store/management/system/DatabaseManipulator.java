@@ -29,7 +29,10 @@ public class DatabaseManipulator {
     private Statement statement = null;
     private String user = "root";
     private String pass = "password";
-    Gson gson;
+    private Gson gson;
+    
+    private static final String CONFIRMATION_JSON = "{\"result\":1}";
+    private static final String DENIAL_JSON = "{\"result\":0}"; 
 
     public DatabaseManipulator() throws SQLException {
         try {
@@ -145,8 +148,14 @@ public class DatabaseManipulator {
         return sendSQLUpdate(query);
     }
 
-    public String updateStock(String itemID, String noOfItems) {
+    public String increaseStock(String itemID, String noOfItems) {
         String query = "UPDATE StockItems SET quantity=quantity+" + noOfItems
+                + " WHERE itemID='" + itemID + "'";
+        return sendSQLUpdate(query);
+    }
+    
+    public String updateStockItems(String itemID, String noOfItems){
+        String query = "UPDATE StockItems SET quantity=" + noOfItems
                 + " WHERE itemID='" + itemID + "'";
         return sendSQLUpdate(query);
     }
@@ -174,8 +183,6 @@ public class DatabaseManipulator {
     }
 
     public String deletePurchaseInvoice(String invoiceID) {
-        System.err.println("server deleting invoice");
-        // String query = "DELETE PurchaseItems, PurchaseInvoices From PurchaseItems INNER JOIN PurchaseInvoices WHERE PurchaseItems.invoiceID="+invoiceID+" and PurchaseInvoices.invoiceID="+invoiceID;
         String query = "DELETE FROM PurchaseItems WHERE invoiceID=" + invoiceID + "; ";
         String result = sendSQLUpdate(query);
         String query2 = "DELETE FROM PurchaseInvoices WHERE invoiceID=" + invoiceID + ";";
@@ -191,8 +198,15 @@ public class DatabaseManipulator {
         PurchaseInvoice invoice = gson.fromJson(json, PurchaseInvoice.class);
         ArrayList<StockItem> stockItems = new ArrayList<>();
         for (CustomerPurchaseItem cpItem : invoice.getItems()) {
-            stockItems.add(gson.fromJson(getItem(cpItem.getItemID()), StockItem.class));
-        }
+            StockItem stockItem = gson.fromJson(getItem(cpItem.getItemID()), StockItem.class);
+            // Checking stock availability
+            if(stockItem.getQuantity() >= cpItem.getQuantity()){
+                stockItem.setQuantity(stockItem.getQuantity() - cpItem.getQuantity());
+            }else{
+                return DENIAL_JSON;
+            }
+            stockItems.add(stockItem);
+        }        
         invoice.calculateTotalPrice(stockItems);
         String invoiceQuery = "INSERT INTO PurchaseInvoices (userID, invoiceDate, invoiceDescription, totalPrice, hasRentedItems)" + " VALUES('" + invoice.getUserID() + "','" + invoice.getInvoiceDate() + "','" + invoice.getInvoiceDescription() + "','" + invoice.getTotalPrice() + "'," + ("" + invoice.getHasRentedItems()).toUpperCase() + ");";
         String response = sendSQLUpdate(invoiceQuery);
@@ -211,6 +225,11 @@ public class DatabaseManipulator {
             }
             query += ");";
             sendSQLUpdate(query);
+        }
+        if(response.equals(CONFIRMATION_JSON)){
+            for(StockItem stockItem : stockItems){
+                updateStockItems(stockItem.getItemID()+"", stockItem.getQuantity() + "");
+            }
         }
         return response;
     }
