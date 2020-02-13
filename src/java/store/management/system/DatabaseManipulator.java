@@ -367,7 +367,7 @@ public class DatabaseManipulator {
         return obj.toString();
     }
 
-    private void closeConnection() {
+    public void closeConnection() {
         try {
             if (statement != null) {
                 statement.close();
