@@ -24,7 +24,6 @@ public class AuthUtils {
     }
 
     public String authenticateCustomer(String username, String password) throws SQLException {
-        System.err.println(username + " - " + password);
         String data = new DatabaseManipulator().getUserWithUsername(username);
         try {
             User user = gson.fromJson(data, User.class);
@@ -38,7 +37,7 @@ public class AuthUtils {
     }
 
     public String authenticateEmployee(String username, String password) throws SQLException {
-        String data = new DatabaseManipulator().getUser(username);
+        String data = new DatabaseManipulator().getUserWithUsername(username);
         try {
             User user = gson.fromJson(data, User.class);
             if (user.getPassword().equals(password) && user.getAccountType() >= 2) {
@@ -51,7 +50,7 @@ public class AuthUtils {
     }
 
     public String authenticateAdmin(String username, String password) throws SQLException {
-        String data = new DatabaseManipulator().getUser(username);
+        String data = new DatabaseManipulator().getUserWithUsername(username);
         try {
             User user = gson.fromJson(data, User.class);
             if (user.getPassword().equals(password) && user.getAccountType() >= 3) {

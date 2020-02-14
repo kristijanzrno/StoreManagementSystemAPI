@@ -45,6 +45,13 @@ public class StoreManagementResource {
         return new AuthUtils().authenticateCustomer(username, password);
     }
     
+    @GET
+    @Path("/loginEmployee")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String loginEmployee(@QueryParam("username") String username, @QueryParam("password") String password) throws SQLException {
+        return new AuthUtils().authenticateEmployee(username, password);
+    }
+    
     /*
     ************************
     TOP LEVEL USER FUNCTIONS
