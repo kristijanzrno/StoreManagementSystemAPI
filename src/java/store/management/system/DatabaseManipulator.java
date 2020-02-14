@@ -78,6 +78,8 @@ public class DatabaseManipulator {
 
     public String createUser(String json) {
         User user = gson.fromJson(json, User.class);
+        if(!getUserWithUsername(user.getUsername()).equals("[]"))
+            return "[]";
         String query = "INSERT INTO Users (username, password, firstName, lastName, email, address, phoneNumber, accountType)"
                 + " VALUES('" + user.getUsername() + "','" + user.getPassword() + "','" + user.getFirstName() + "','" + user.getLastName() + "','" + user.getEmail() + "','" + user.getAddress() + "','" + user.getPhoneNumber() + "'," + user.getAccountType() + ")";
         return sendSQLUpdate(query);
@@ -135,7 +137,7 @@ public class DatabaseManipulator {
     public String createItem(String json) {
         StockItem item = gson.fromJson(json, StockItem.class);
         String query = "INSERT INTO stockitems (name, description, quantity, type, manufacturerPartNum, cost, salesPrice, preferredSupplier, VAT, dateCreated, lastModified, isRentable)"
-                + " VALUES('" + item.getName() + "','" + item.getDescription() + "','" + item.getQuantity() + "','" + item.getType() + "','" + item.getManufacturerPartNum() + "','" + item.getCost() + "','" + item.getSalesPrice() + "'," + item.getPreferredSupplier() + ",'" + item.getVAT() + "','" + item.getDateCreated() + "','" + item.getLastModified() + "'," + ("" + item.isRentable()).toUpperCase() + ")";
+                + " VALUES('" + item.getName() + "','" + item.getDescription() + "','" + item.getQuantity() + "','" + item.getType() + "','" + item.getManufacturerPartNum() + "','" + item.getCost() + "','" + item.getSalesPrice() + "','" + item.getPreferredSupplier() + "','" + item.getVAT() + "','" + item.getDateCreated() + "','" + item.getLastModified() + "'," + ("" + item.isRentable()).toUpperCase() + ")";
         return sendSQLUpdate(query);
     }
 
